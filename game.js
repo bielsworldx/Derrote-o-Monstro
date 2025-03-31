@@ -5,7 +5,7 @@ const config = {
     physics: {
         default: "arcade",
         arcade: {
-            gravity: {y:0},
+            gravity: {y:500},
             debug: false
         }
     },
@@ -29,6 +29,10 @@ function preload() {
         frameWidth: 640,
         frameHeight: 640,
     })
+    this.load.spritesheet("enemyR", "newenemyr.png", {
+        frameWidth: 640,
+        frameHeight: 640,
+    })
     this.load.image("floor","floor.png");
 }
 function create() {
@@ -40,12 +44,12 @@ function create() {
         frameRate: 5,
         repeat:-1,
     }); 
-    player = this.physics.add.sprite(400,300, "player").play("playerAnim");
+    player = this.physics.add.sprite(400,375, "player").play("playerAnim");
     player.setScale(0.4);
     player.setCollideWorldBounds(true);
-    player.body.setGravity(0,0);
-    player.body.setAllowGravity(false);
-    /*player.body.immovable=true;
+    player.body.setGravityY(3000);
+    /*.body.setAllowGravity(false);
+    player.body.immovable=true;
     player.body.moves=false;*/
     //Usar setVelocity para colisões sem interferir no movimento. Fazer teste!
     this.anims.create({
@@ -54,8 +58,10 @@ function create() {
         frameRate:9,
         repeat:-1,
     });
-    enemy = this.physics.add.sprite(700, 300, "enemy").play("enemyAnim");
+    enemy = this.physics.add.sprite(1200, 298, "enemy").play("enemyAnim");
     enemy.setScale(0.5);
+    enemy.setCollideWorldBounds(true);
+    enemy.setVelocityX(-500);
 
     const floor = this.physics.add.staticGroup();
     floor.create(730, 500, "floor").setScale(1.5).refreshBody();
@@ -67,16 +73,26 @@ function create() {
     
 }
 function update() {
+    player.setVelocity(0)
     if(cursors.left.isDown) {
-        player.x-=3;
+        player.setVelocityX(-160);
     }
     else if(cursors.right.isDown) {
-        player.x+=3;
+        player.setVelocityX(160);
     }
     else if (cursors.up.isDown) {
-        player.y-=3;
+        player.setVelocityY(-360);
     }
     else if (cursors.down.isDown) {
-        player.y+=3;
+        player.setVelocityY(200);
+    }
+
+    if (enemy.body.blocked.left) {
+        enemy.setTexture("enemyR");
+        enemy.setVelocityX(500);
+    }
+    else if (enemy.body.blocked.right) {
+        enemy.setTexture("enemy");
+        enemy.setVelocityX(-500);
     }
 }
